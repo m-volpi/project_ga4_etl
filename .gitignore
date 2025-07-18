@@ -5,6 +5,7 @@ credenciais/
 core/config.py
 
 core/__pycache__/
+*.pyc
 # Ignorar arquivos de cache do Python
 
 .executar_ga4.bat
