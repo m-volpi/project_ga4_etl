@@ -1,0 +1,5 @@
+# Ignorar a pasta de credenciais
+credenciais/
+
+# Ignorar o arquivo de configuração sensível
+core/config.py
