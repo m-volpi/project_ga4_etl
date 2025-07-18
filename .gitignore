@@ -4,7 +4,7 @@ credenciais/
 # Ignorar o arquivo de configuração sensível
 core/config.py
 
-core/__pycache__
+core/__pycache__/
 # Ignorar arquivos de cache do Python
 
 .executar_ga4.bat
