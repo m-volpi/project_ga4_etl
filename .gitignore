@@ -8,4 +8,4 @@ __pycache__/
 *.pyc
 # Ignorar arquivos de cache do Python
 
-.executar_ga4.bat
+executar_ga4.bat
