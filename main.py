@@ -83,7 +83,7 @@ except Exception as e:
    
 try:
     enviar_email_log(
-        assunto = "Erro ao executar o script GA4",
+        assunto = "STATUS SCRIPT GA4",
         mensagem = mensagem,
         remetente = REMETENTE,
         senha = SENHA,
