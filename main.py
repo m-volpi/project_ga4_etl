@@ -14,29 +14,37 @@ client = BetaAnalyticsDataClient(credentials=credentials)
 REMETENTE = INFO_EMAIL["REMETENTE"]
 SENHA = INFO_EMAIL["SENHA"]
 DESTINATARIOS = INFO_EMAIL["DESTINATARIOS"]
-PORTA = INFO_EMAIL["port"]  # ← Isso aqui é necessário
+PORTA = INFO_EMAIL["port"]
  
 # Datas
 hoje = datetime.today().date()
-ano = hoje.year
-mes = hoje.month - 2
 antesontem = hoje - timedelta(days=2)
- 
- 
+
+# Corrigir o mês (evitar mês 0 ou negativo)
+mes = hoje.month - 2
+ano = hoje.year
+
+if mes <= 0:
+    mes += 12
+    ano -= 1
+
 try:
     def gerar_data_range(tabela):
-        # Começa sempre em 1º de janeiro do ano atual
+        # Gera um intervalo de datas de 1º dia do mês até antes de ontem
         inicio = datetime(ano, mes, 1).date()
         fim = antesontem
         return inicio.strftime("%Y-%m-%d"), fim.strftime("%Y-%m-%d")
- 
-    def apagar_dados_ano_atual(conn, tabela, ano):
-        """Apaga os dados do ano atual da tabela"""
+
+    def apagar_dados_mes_ano(conn, tabela, ano, mes):
+        # Apaga os dados da tabela a partir do mês e ano especificados
         with conn.cursor() as cur:
-            query = sql.SQL(
-                "DELETE FROM {} WHERE EXTRACT(YEAR FROM data) = %s"
-            ).format(sql.Identifier(tabela))
-            cur.execute(query, (ano,))
+            query = sql.SQL("""
+                DELETE FROM {tabela}
+                WHERE data >= %s
+            """).format(tabela=sql.Identifier(tabela))
+
+            data_inicial = datetime(ano, mes, 1).date()
+            cur.execute(query, (data_inicial,))
         conn.commit()
  
     # --------------------------------------------------------------- #
@@ -58,7 +66,7 @@ try:
         metodo = getattr(modulo, funcao)
         df = metodo(client, GA4_PROPERTY_ID, start, end)
  
-        apagar_dados_ano_atual(conn, tabela, ano)
+        apagar_dados_mes_ano(conn, tabela, ano, mes)
         salvar_no_postgres(df, tabela, conn)
         print(f"✅ {tabela} atualizado com {len(df)} registros.")
     
